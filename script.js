@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const openLegalModalBtn = document.getElementById('openLegalModal');
   const closeLegalModalBtn = document.getElementById('closeLegalModal');
 
+  // S'assurer que les deux bandeaux de statut sont masqués par défaut au chargement
+  if (formSuccessMessage) formSuccessMessage.hidden = true;
+  if (formErrorMessage) formErrorMessage.hidden = true;
+
   // --------------------------------------------------------------------------
   // 1. Sticky Header Elevation on Scroll
   // --------------------------------------------------------------------------
@@ -250,21 +254,22 @@ document.addEventListener('DOMContentLoaded', () => {
           body: formData
         });
 
-        const data = await response.json();
+        const data = await response.json().catch(() => null);
 
-        if (response.ok && data.success) {
-          // Success message display
+        if (response.ok) {
+          // Success: show only green banner and reset form
+          if (formErrorMessage) formErrorMessage.hidden = true;
           if (formSuccessMessage) {
             formSuccessMessage.hidden = false;
             formSuccessMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
-          // Reset form fields
           contactForm.reset();
         } else {
-          // Server error message
-          const errorMsg = data.message || "Une erreur est survenue lors de l'envoi. Veuillez réessayer.";
-          if (formErrorText) formErrorText.textContent = errorMsg;
+          // Error: show only red banner
+          if (formSuccessMessage) formSuccessMessage.hidden = true;
           if (formErrorMessage) {
+            const errorMsg = (data && data.message) ? data.message : "Une erreur est survenue lors de l'envoi. Veuillez réessayer.";
+            if (formErrorText) formErrorText.textContent = errorMsg;
             formErrorMessage.hidden = false;
             formErrorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }

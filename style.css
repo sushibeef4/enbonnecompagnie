@@ -88,6 +88,10 @@
   padding: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   font-family: var(--font-family-base);
   font-size: 16px;
@@ -1345,6 +1349,11 @@ ul {
 }
 
 /* Success Confirmation Banner */
+.form-success-banner[hidden],
+.form-error-banner[hidden] {
+  display: none !important;
+}
+
 .form-success-banner {
   margin-top: 1.75rem;
   background-color: #EBF8EE;
