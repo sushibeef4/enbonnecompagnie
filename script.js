@@ -5,7 +5,7 @@
  * - Header Scroll Elevation & Active Link Highlighting
  * - Accessible Smooth Scrolling with Sticky Header Offset
  * - Interactive Pricing Plan Selection (pre-fills contact form)
- * - Functional Contact Form Validation & Mailto Action
+ * - Web3Forms Asynchronous Submission & Validation
  * - Legal Modal Dialog Controls
  */
 
@@ -244,21 +244,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         const formData = new FormData(contactForm);
-        const object = Object.fromEntries(formData);
-        const json = JSON.stringify(object);
 
         const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: json
+          body: formData
         });
 
         const data = await response.json();
 
-        if (response.status === 200 && data.success) {
+        if (response.ok && data.success) {
           // Success message display
           if (formSuccessMessage) {
             formSuccessMessage.hidden = false;
