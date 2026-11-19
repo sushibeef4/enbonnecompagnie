@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactForm = document.getElementById('contactForm');
   const submitBtn = document.getElementById('submitBtn');
   const formSuccessMessage = document.getElementById('formSuccessMessage');
+  const formErrorMessage = document.getElementById('formErrorMessage');
+  const formErrorText = document.getElementById('formErrorText');
   const legalModal = document.getElementById('legalModal');
   const openLegalModalBtn = document.getElementById('openLegalModal');
   const closeLegalModalBtn = document.getElementById('closeLegalModal');
@@ -194,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       let isFormValid = true;
       let firstInvalidField = null;
@@ -221,12 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Collect values for mailto creation
-      const nomPrenomVal = fields.nomPrenom.el.value.trim();
-      const contactVal = fields.contactMoyen.el.value.trim();
-      const pourQuiVal = fields.pourQui.el.value;
-      const residenceVal = fields.residence.el.value;
-      const besoinVal = fields.besoinPrincipal.el.value.trim();
+      // Hide previous alert banners
+      if (formSuccessMessage) formSuccessMessage.hidden = true;
+      if (formErrorMessage) formErrorMessage.hidden = true;
 
       // Button loading state
       const originalBtnHTML = submitBtn.innerHTML;
@@ -240,39 +239,55 @@ document.addEventListener('DOMContentLoaded', () => {
           <line x1="2" y1="12" x2="6" y2="12"></line>
           <line x1="18" y1="12" x2="22" y2="12"></line>
         </svg>
-        <span>Transmission en cours...</span>
+        <span>Envoi en cours...</span>
       `;
 
-      setTimeout(() => {
+      try {
+        const formData = new FormData(contactForm);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: json
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          // Success message display
+          if (formSuccessMessage) {
+            formSuccessMessage.hidden = false;
+            formSuccessMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          // Reset form fields
+          contactForm.reset();
+        } else {
+          // Server error message
+          const errorMsg = data.message || "Une erreur est survenue lors de l'envoi. Veuillez réessayer.";
+          if (formErrorText) formErrorText.textContent = errorMsg;
+          if (formErrorMessage) {
+            formErrorMessage.hidden = false;
+            formErrorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      } catch (err) {
+        // Network or unexpected error
+        if (formErrorText) {
+          formErrorText.textContent = "Une erreur réseau est survenue. Veuillez vérifier votre connexion et réessayer.";
+        }
+        if (formErrorMessage) {
+          formErrorMessage.hidden = false;
+          formErrorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHTML;
-
-        // Display success banner
-        if (formSuccessMessage) {
-          formSuccessMessage.hidden = false;
-          formSuccessMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        // Construct pre-filled email client link
-        const emailSubject = encodeURIComponent(`Demande d'appel découverte - ${nomPrenomVal}`);
-        const emailBody = encodeURIComponent(
-          `Bonjour,\n\n` +
-          `Je souhaite programmer un appel découverte gratuit de 10 minutes.\n\n` +
-          `Voici les informations de ma demande :\n` +
-          `- Nom et Prénom : ${nomPrenomVal}\n` +
-          `- Téléphone ou Email : ${contactVal}\n` +
-          `- Bénéficiaire : ${pourQuiVal}\n` +
-          `- Lieu de résidence : ${residenceVal}\n` +
-          `- Besoin principal :\n${besoinVal}\n\n` +
-          `Merci pour votre retour !`
-        );
-
-        // Open user mail client with pre-filled content
-        window.location.href = `mailto:?subject=${emailSubject}&body=${emailBody}`;
-
-        // Reset form
-        contactForm.reset();
-      }, 600);
+      }
     });
   }
 

@@ -366,18 +366,22 @@
         </div>
 
         <div class="contact-form-card">
-          <form id="contactForm" class="contact-form" novalidate>
+          <form id="contactForm" class="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+            <!-- Web3Forms Hidden Configuration -->
+            <input type="hidden" name="access_key" value="993ae42f-c349-466c-bf14-c68140ee9088">
+            <input type="hidden" name="subject" value="Nouvelle demande de rappel - En Bonne Compagnie">
+
             <!-- Champ 1 : Nom et Prénom -->
             <div class="form-group">
               <label for="nomPrenom" class="form-label">Nom et Prénom <span class="required">*</span></label>
-              <input type="text" id="nomPrenom" name="nomPrenom" class="form-input" placeholder="Ex : Marie Dupont" required autocomplete="name">
+              <input type="text" id="nomPrenom" name="nom" class="form-input" placeholder="Ex : Marie Dupont" required autocomplete="name">
               <span class="field-error" id="nomPrenomError">Veuillez renseigner votre nom et prénom.</span>
             </div>
 
             <!-- Champ 2 : Téléphone ou Email -->
             <div class="form-group">
               <label for="contactMoyen" class="form-label">Numéro de téléphone ou adresse mail <span class="required">*</span></label>
-              <input type="text" id="contactMoyen" name="contactMoyen" class="form-input" placeholder="Ex : 06 12 34 56 78 ou marie.dupont@email.com" required>
+              <input type="text" id="contactMoyen" name="telephone" class="form-input" placeholder="Ex : 06 12 34 56 78 ou marie.dupont@email.com" required>
               <span class="field-error" id="contactMoyenError">Veuillez renseigner un numéro de téléphone ou une adresse email valide.</span>
             </div>
 
@@ -387,7 +391,7 @@
               <div class="form-group">
                 <label for="pourQui" class="form-label">Pour qui cherchez-vous de la compagnie ? <span class="required">*</span></label>
                 <div class="select-wrapper">
-                  <select id="pourQui" name="pourQui" class="form-select" required>
+                  <select id="pourQui" name="proche" class="form-select" required>
                     <option value="" disabled selected>Sélectionnez une option</option>
                     <option value="Mon père">Mon père</option>
                     <option value="Ma mère">Ma mère</option>
@@ -401,7 +405,7 @@
               <div class="form-group">
                 <label for="residence" class="form-label">Où réside la personne ? <span class="required">*</span></label>
                 <div class="select-wrapper">
-                  <select id="residence" name="residence" class="form-select" required>
+                  <select id="residence" name="lieu" class="form-select" required>
                     <option value="" disabled selected>Sélectionnez une option</option>
                     <option value="À domicile">À domicile</option>
                     <option value="En EHPAD ou Résidence">En EHPAD ou Résidence</option>
@@ -414,7 +418,7 @@
             <!-- Champ texte : Quel est votre besoin principal ? -->
             <div class="form-group">
               <label for="besoinPrincipal" class="form-label">Quel est votre besoin principal ? <span class="required">*</span></label>
-              <textarea id="besoinPrincipal" name="besoinPrincipal" class="form-textarea" rows="3" placeholder="Ex : Parties d'échecs, stimulation cognitive, conversation, promenades, aide numérique..." required></textarea>
+              <textarea id="besoinPrincipal" name="besoin" class="form-textarea" rows="3" placeholder="Ex : Parties d'échecs, stimulation cognitive, conversation, promenades, aide numérique..." required></textarea>
               <span class="field-error" id="besoinPrincipalError">Veuillez préciser votre besoin principal.</span>
             </div>
 
@@ -438,9 +442,22 @@
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <div>
-              <h4 class="success-title">Demande prête à l'envoi !</h4>
+              <h4 class="success-title">Demande envoyée avec succès !</h4>
               <p class="success-desc">
-                Merci ! Vos informations ont bien été enregistrées. Votre client email s'est ouvert pour transmettre votre demande. Nous vous répondrons sous 24h.
+                Merci ! Votre message a bien été transmis à Quentin et Mathis. Nous vous recontacterons personnellement sous 24h pour votre appel découverte.
+              </p>
+            </div>
+          </div>
+
+          <!-- Error Alert Message -->
+          <div class="form-error-banner" id="formErrorMessage" role="alert" aria-live="polite" hidden>
+            <div class="error-icon-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div>
+              <h4 class="error-title">Une erreur est survenue</h4>
+              <p class="error-desc" id="formErrorText">
+                L'envoi a échoué. Veuillez vérifier votre connexion et réessayer, ou nous contacter directement.
               </p>
             </div>
           </div>
